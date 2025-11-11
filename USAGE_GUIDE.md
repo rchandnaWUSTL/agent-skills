@@ -25,35 +25,35 @@ This guide explains how to effectively use the Agent Instructions Library with d
 
 ### Visual Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│            Instruction File Type Hierarchy                   │
-├─────────────────────────────────────────────────────────────┤
+```text
+┌───────────────────────────────────────────────────────────────┐
+│         Instruction File Type Hierarchy                       │
+├───────────────────────────────────────────────────────────────┤
 │                                                               │
-│  1. System Prompts (Foundation)                              │
-│     ├─ Defines agent identity & expertise                   │
-│     ├─ Sets behavior patterns                               │
-│     └─ Establishes guardrails                               │
+│  1. System Prompts (Foundation)                               │
+│     ├─ Defines agent identity & expertise                     │
+│     ├─ Sets behavior patterns                                 │
+│     └─ Establishes guardrails                                 │
 │          │                                                    │
 │          ▼                                                    │
-│  2. Skills (Discrete Capabilities)                           │
-│     ├─ Generate HCL code                                     │
-│     ├─ Create Vault policies                                │
-│     └─ Scan for secrets                                      │
+│  2. Skills (Discrete Capabilities)                            │
+│     ├─ Generate HCL code                                      │
+│     ├─ Create Vault policies                                  │
+│     └─ Scan for secrets                                       │
 │          │                                                    │
 │          ▼                                                    │
-│  3. Workflows (Multi-Step Processes)                         │
-│     ├─ Plan → Review → Apply                                │
-│     ├─ Scan → Triage → Remediate                            │
-│     └─ Configure → Test → Deploy                            │
+│  3. Workflows (Multi-Step Processes)                          │
+│     ├─ Plan → Review → Apply                                  │
+│     ├─ Scan → Triage → Remediate                              │
+│     └─ Configure → Test → Deploy                              │
 │          │                                                    │
 │          ▼                                                    │
-│  4. Prompts (Reusable Templates)                             │
-│     ├─ Summarize Terraform plan                             │
-│     ├─ Analyze scan results                                 │
-│     └─ Generate reports                                      │
+│  4. Prompts (Reusable Templates)                              │
+│     ├─ Summarize Terraform plan                               │
+│     ├─ Analyze scan results                                   │
+│     └─ Generate reports                                       │
 │                                                               │
-└─────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ### 1. Skills (`SKILL.md`)
@@ -84,7 +84,7 @@ When invoked, I will:
 
 ## Examples
 [Concrete usage examples]
-```
+```text
 
 **Note:** Skills use standard Markdown format. The skill name serves as the identifier for Claude's progressive disclosure and explicit references in other platforms.
 
@@ -95,7 +95,7 @@ skills/generate-hcl/
 └── resources/
     ├── hcl-best-practices.md    # Level 3
     └── examples/                 # Level 3
-```
+```text
 
 ### 2. Workflows (`*.md`)
 
@@ -153,7 +153,7 @@ skills/generate-hcl/
 
 ## Example
 [Concrete example]
-```
+```text
 
 **Usage Patterns:**
 
@@ -161,17 +161,17 @@ skills/generate-hcl/
 ```
 @workspace Read terraform/prompts/summarize-plan.md
 Then summarize this plan: #file:tfplan.txt
-```
+```text
 
 **As Prompt File (GitHub Copilot):**
 ```
 @workspace #summarize-plan #file:tfplan.txt
-```
+```text
 
 **As Attachment (Claude):**
 ```
 Using the summarize-plan prompt, analyze: [paste plan]
-```
+```text
 
 ### 4. System Prompts (`system-prompt-*.md`)
 
@@ -196,7 +196,7 @@ Using the summarize-plan prompt, analyze: [paste plan]
 ```
 
 **Loading:**
-```
+```text
 @workspace Load terraform/prompts/system-prompt-tf.md as system context
 ```
 
@@ -225,7 +225,7 @@ ln -s agent-instructions-library/.github/copilot-instructions.md .github/
 # Option 3: Add submodule
 git submodule add https://github.com/hashicorp/agent-instructions-library .ai-instructions
 ln -s .ai-instructions/.github/copilot-instructions.md .github/
-```
+```text
 
 #### Path-Specific Instructions
 
@@ -259,7 +259,7 @@ CRITICAL: Production changes require:
 2. Security scan (tfsec, checkov)
 3. Manual approval
 4. Follow terraform/workflows/plan-and-apply-with-approval.md
-```
+```text
 
 #### Prompt Files
 
@@ -278,12 +278,12 @@ Review this Terraform code for:
 - Cost optimization opportunities
 
 Reference: #file:terraform/skills/generate-hcl/resources/hcl-best-practices.md
-```
+```text
 
 **Usage:**
 ```
 @workspace #terraform-review #file:main.tf
-```
+```text
 
 ### Claude
 
@@ -319,7 +319,7 @@ response = client.messages.create(
         "content": "Create an AWS VPC with public and private subnets"
     }]
 )
-```
+```text
 
 **Progressive Disclosure Example:**
 ```
@@ -339,7 +339,7 @@ References: resources/hcl-best-practices.md (as needed)
       │
       ▼
 Generates secure HCL code
-```
+```text
 
 ### Cursor
 
@@ -367,7 +367,7 @@ When creating Vault policies:
 ## References
 - Skills: agent-instructions-library/{product}/skills/
 - Workflows: agent-instructions-library/{product}/workflows/
-```
+```text
 
 #### AGENTS.md
 
@@ -437,7 +437,7 @@ vault policy fmt policy.hcl && vault policy write test policy.hcl
 
 # Vault Radar
 vault-radar scan -d . -o json
-```
+```text
 
 ### Compliance
 All generated code must:
@@ -454,7 +454,7 @@ All generated code must:
 {
   "contextFileName": "AGENTS.md"
 }
-```
+```text
 
 #### Aider Specific
 
@@ -468,7 +468,7 @@ read: AGENTS.md
 ### GitHub Copilot Patterns
 
 #### Pattern 1: Direct Skill Reference
-```
+```text
 @workspace Using terraform/skills/generate-hcl, create:
 - AWS VPC with 3 AZs
 - Public and private subnets
@@ -480,7 +480,7 @@ Compliance: CIS AWS Foundations
 ```
 
 #### Pattern 2: Workflow Execution
-```
+```text
 @workspace Follow terraform/workflows/plan-and-apply-with-approval.md
 
 Changes: Adding RDS instance
@@ -503,20 +503,20 @@ You are a Terraform expert. Always:
 2. Use terraform/skills/generate-hcl/ for code generation
 3. Run security scans before committing
 4. Follow plan-and-apply-with-approval for production
-```
+```text
 
 **Usage:**
 ```
 # Select "terraform-expert" from agent dropdown
 Create an RDS instance
-```
+```text
 
 ### Claude Patterns
 
 #### Pattern 1: Skill Discovery
 ```
 Create a secure S3 bucket for production use
-```
+```text
 Claude automatically:
 1. Scans available skills
 2. Loads `generate-hcl` skill
@@ -530,7 +530,7 @@ Using the generate-hcl skill, create an AWS EKS cluster with:
 - Managed node groups
 - Pod security policies
 - Cluster autoscaling
-```
+```text
 
 #### Pattern 3: Multi-Skill Workflow
 ```
@@ -538,7 +538,7 @@ Using the generate-hcl skill, create an AWS EKS cluster with:
 2. Use triage-and-remediate workflow for any findings
 3. Generate migration plan to Vault
 4. Create Vault policies using generate-policy skill
-```
+```text
 
 ### Cursor Patterns
 
@@ -548,13 +548,13 @@ Using the generate-hcl skill, create an AWS EKS cluster with:
 # Automatically applies terraform/skills/generate-hcl/
 
 Create VPC  # Cursor applies skill automatically
-```
+```text
 
 #### Pattern 2: Explicit Workflow
 ```
 @Apply terraform/workflows/security-scan-workflow.md
 Scan: ./terraform/prod/
-```
+```text
 
 #### Pattern 3: AGENTS.md Reference
 ```
@@ -562,7 +562,7 @@ Scan: ./terraform/prod/
 # Instructions available in context
 
 Generate database module per AGENTS.md standards
-```
+```text
 
 ## 🌟 Real-World Examples
 
@@ -605,7 +605,7 @@ Generate:
 - README with architecture diagram
 - Security scan configuration
 - Cost estimation
-```
+```text
 
 **Agent Actions:**
 1. Loads `terraform/skills/generate-hcl/SKILL.md`
@@ -655,7 +655,7 @@ Services:
 Environment: production
 Compliance: PCI DSS Level 1
 Auth method: Kubernetes IRSA
-```
+```text
 
 **Agent Actions:**
 1. Loads `vault/skills/generate-policy/SKILL.md`
@@ -694,7 +694,7 @@ Required Actions:
 6. Generate compliance report
 
 Timeline: Complete within 24 hours
-```
+```text
 
 **Agent Actions:**
 1. Loads `vault-radar/workflows/triage-and-remediate.md`
@@ -715,7 +715,7 @@ Timeline: Complete within 24 hours
 @workspace Load terraform/prompts/system-prompt-tf.md
 
 Now help me create infrastructure...
-```
+```text
 
 **Why:** Sets correct expertise, behavior, and safety guardrails
 
@@ -732,7 +732,7 @@ Using terraform/skills/generate-hcl, create:
 - Encryption with KMS
 - Automated backups (7 days)
 - Private subnet placement
-```
+```text
 
 ### 3. Combine Skills and Workflows
 
@@ -742,7 +742,7 @@ Using terraform/skills/generate-hcl, create:
 Step 1: Use terraform/skills/generate-hcl to create EKS cluster
 Step 2: Apply terraform/workflows/security-scan-workflow.md
 Step 3: Follow terraform/workflows/plan-and-apply-with-approval.md
-```
+```text
 
 ### 4. Validate Agent Output
 
@@ -765,7 +765,7 @@ vault-radar scan -d .
 
 ### 5. Iterate and Refine
 
-```
+```text
 # First attempt
 @workspace Using generate-hcl, create S3 bucket
 
@@ -790,7 +790,7 @@ Also add bucket policy preventing unencrypted uploads
 **Solutions:**
 
 1. **Be more explicit:**
-```
+```text
 # ❌ Implicit
 Create infrastructure
 
@@ -799,13 +799,13 @@ Using terraform/skills/generate-hcl/SKILL.md, create...
 ```
 
 2. **Load instructions first:**
-```
+```text
 @workspace Read terraform/skills/generate-hcl/SKILL.md completely
 Then create...
 ```
 
 3. **Reference multiple times:**
-```
+```text
 Following terraform/skills/generate-hcl best practices,
 create... ensure you apply security defaults from the skill.
 ```
@@ -821,18 +821,18 @@ create... ensure you apply security defaults from the skill.
 1. **Install skills:**
 ```bash
 cp -r terraform/skills ~/.claude/skills/terraform/
-```
+```text
 
 2. **Reference full path:**
 ```
 Using the skill at terraform/skills/generate-hcl/SKILL.md
-```
+```text
 
 3. **Load manually:**
 ```
 First, read terraform/skills/generate-hcl/SKILL.md
 Then apply those patterns to create...
-```
+```text
 
 ### Issue: Prompt Files Not Working (GitHub Copilot)
 
@@ -853,12 +853,12 @@ Then apply those patterns to create...
 ```bash
 ls .github/prompts/
 # Files must end with .prompt.md
-```
+```text
 
 3. **Use direct reference:**
 ```
 @workspace #file:.github/prompts/summarize-plan.prompt.md
-```
+```text
 
 ### Issue: AGENTS.md Not Loading (Cursor, etc.)
 
@@ -880,7 +880,7 @@ ls -la AGENTS.md
 
 ## Section Headers Required
 Content...
-```
+```text
 
 3. **Restart IDE:**
 Some platforms only load AGENTS.md on startup
