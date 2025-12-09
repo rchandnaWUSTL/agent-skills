@@ -10,16 +10,15 @@
 This repository hosts pre-built instruction sets that teach AI agents HashiCorp best practices, security patterns, and workflows. Copy files → Reference in prompts → Get quality code. Edit them as needed.
 
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│                HashiCorp Instructions Library                │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  Terraform        Vault          Vault Radar      Consul     │
-│  └─ Skills        └─ Skills      └─ Skills        └─ Skills  │
-│  └─ Workflows     └─ Workflows   └─ Workflows     └─ ...     │
-│  └─ Prompts       └─ Prompts     └─ Prompts                  │
-│                                                              │
-└───┬─────────────┬─────────────┬─────────────┬──────────┬─────┘
+┌───────────────────────────────────────────────────────────────┐
+│                HashiCorp Instructions Library                 │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  product/ (e.g. terraform, vault, packer, consul, vault-radar)│
+│    └─ use-case/ (e.g. provider-development, creating-images)  │
+│      └─ .vscode/ .kiro/ .aws/ skills/ README.md               │
+│                                                               │
+└───┬─────────────┬─────────────┬─────────────┬──────────┬──────┘
     │             │             │             │          │
     ▼             ▼             ▼             ▼          ▼
 ┌──────────┐ ┌─────────┐ ┌─────────┐ ┌────────────┐ ┌────────────┐
@@ -45,7 +44,7 @@ This repository hosts pre-built instruction sets that teach AI agents HashiCorp 
 ### Example 1: Generate Terraform Infrastructure (GitHub Copilot)
 
 ```
-@workspace Using terraform/skills/generate-hcl/, create:
+@workspace Using Terraform best practices, create:
 - VPC with public/private subnets
 - RDS PostgreSQL in private subnet
 - Application load balancer
@@ -53,7 +52,7 @@ This repository hosts pre-built instruction sets that teach AI agents HashiCorp 
 Environment: production, Region: us-east-1
 ```
 
-**What happens:** Copilot loads `.github/copilot-instructions.md` → References generate-hcl skill → Generates secure, well-structured HCL
+**What happens:** Copilot loads `.github/copilot-instructions.md` → References terraform/terraform-code-generation → Generates secure, well-structured HCL
 
 ### Example 2: Create Vault Policy (Claude)
 
@@ -64,18 +63,18 @@ Using the generate-policy skill, create a policy for:
 - Deny: all other paths
 ```
 
-**What happens:** Claude discovers `vault/skills/generate-policy/SKILL.md` → Loads skill → Generates least-privilege policy
+**What happens:** Claude discovers `vault/generate-policy/SKILL.md` → Loads skill → Generates least-privilege policy
 
 ### Example 3: Remediate Secrets (Any Agent with AGENTS.md)
 
 ```
-Follow vault-radar/workflows/triage-and-remediate.md:
-1. Analyze last scan (47 findings)
+Follow vault-radar/secret-scanning/ workflow:
+1. Scan repository for secrets
 2. Prioritize by severity
 3. Generate remediation plan
 ```
 
-**What happens:** Agent reads AGENTS.md → Finds workflow → Executes multi-step process
+**What happens:** Agent reads AGENTS.md → Finds use-case folder → Executes multi-step process
 
 ## How Each Platform Uses Instructions
 
@@ -111,12 +110,12 @@ Usage:
 ```text
 Repository Structure                  Claude Agent
 ┌────────────────────┐                ┌────────────────────┐
-│ terraform/skills/  │                │ Level 1: Metadata  │
-│ ├─ generate-hcl/   │───────────────►│ ---                │
-│ │  ├─ SKILL.md     │  Scans all     │ name: generate-hcl │
-│ │  └─ resources/   │  SKILL.md      │ description: ...   │
+│ terraform/         │                │ Level 1: Metadata  │
+│ ├─ terraform-      │───────────────►│ ---                │
+│ │  code-generation/│  Scans all     │ name: generate-hcl │
+│ │  └─ SKILL.md     │  SKILL.md      │ description: ...   │
 │ │                  │                │ ---                │
-│ vault/skills/      │                ├────────────────────┤
+│ vault/             │                ├────────────────────┤
 │ └─ generate-policy/│───────────────►│ Level 2: Full Skill│
 │    ├─ SKILL.md     │  If relevant   │ (entire SKILL.md)  │
 │    └─ resources/   │───────────────►│                    │
@@ -129,8 +128,8 @@ Setup (automatic):
 • Progressive disclosure: loads only what's needed
 
 Usage:
-"Using the generate-hcl skill, create an RDS instance"
-(Claude finds and loads terraform/skills/generate-hcl/SKILL.md)
+"Using the generate-policy skill, create a policy"
+(Claude finds and loads vault/generate-policy/SKILL.md)
 ```
 
 ### Cursor: Root-Level Configuration
@@ -151,16 +150,16 @@ Your Project                          Cursor
 Setup (create AGENTS.md):
 $ cat > AGENTS.md <<EOF
 # Skills Available
-- terraform/skills/generate-hcl/ - Generate Terraform
-- vault/skills/generate-policy/ - Create policies
+- terraform/terraform-code-generation/ - Generate Terraform
+- vault/generate-policy/ - Create policies
 
 # Reference
-See .github/copilot-instructions.md for details
+See product README files for details
 EOF
 
 Usage:
-"Create a VPC" → Cursor auto-uses terraform/skills/generate-hcl/
-@Apply terraform/workflows/plan-and-apply-with-approval.md
+"Create a VPC" → Cursor auto-uses terraform/terraform-code-generation/
+@Apply terraform best practices to this configuration
 ```
 
 ### Amazon Kiro: Hook-Based Context
@@ -179,8 +178,8 @@ Your Project                          Amazon Kiro
 │    └─ *.md         │  Guidelines    │ Instructions       │
 └────────────────────┘                └────────────────────┘
 
-Setup (copy to project):
-$ cp -r terraform/.kiro/ .kiro/
+Setup (if .kiro files exist in use-case folders):
+$ cp -r terraform/<use-case>/.kiro/ .kiro/
 
 Usage:
 1. Open Kiro tab in your editor
@@ -200,13 +199,13 @@ User Directory                        Amazon Q CLI
 │       └─ *.md      │                │                    │
 └────────────────────┘                └────────────────────┘
 
-Setup (copy to home directory):
-$ cp -r terraform/.aws/amazonq ~/.aws/
+Setup (if .aws files exist in use-case folders):
+$ cp -r terraform/<use-case>/.aws/ ~/.aws/
 
 Usage:
 $ q
-> /agent switch terraform-action-agent
-Agent switched to: terraform-action-agent
+> /agent switch terraform-agent
+Agent switched to: terraform-agent
 > Create a secure VPC module
 ```
 
@@ -249,30 +248,22 @@ Works with: Cursor, GitHub CoPilot, gemini-cli, Amp, Devin, Warp, Zed, Cursor, o
 ```
 
 **Examples:** Generate HCL code, Create Vault policies, Scan for secrets  
-**Location:** `product/skills/skill-name/SKILL.md`  
+**Location:** `product/use-case/skills/skill-name/SKILL.md`  
 **Usage:** `"Using the generate-hcl skill, create..."`
 
 ### Workflows (`*.md`) - Multi-Step Processes
 
-```text
-Step 1: Init    →    Step 2: Plan    →    Step 3: Review
-                                                 │
-                                            Approved?
-                                                 │
-                                           Yes   │   No
-                                            │    │    │
-Step 6: Verify  ←  Step 5: Apply  ←  ─────┘    └→ Stop
-```
+Workflows are embedded within use-case folders and README files:
+`product/use-case/README.md`
 
 **Examples:** Plan→Approve→Apply, Scan→Triage→Remediate  
-**Location:** `product/workflows/workflow-name.md`  
-**Usage:** `"Follow the plan-and-apply-with-approval workflow"`
+**Location:** `product/use-case/` folder documentation  
+**Usage:** `"Follow the Terraform best practices workflow"`
 
-### Prompts (`*.md`) - Reusable Templates
 
-**Examples:** Summarize Terraform plan, Analyze scan results, Review for security  
-**Location:** `product/prompts/prompt-name.md`  
-**Usage:** `#prompt-name` (Copilot) or reference explicitly
+### Prompts
+
+Prompts folders have been removed from the structure. Use skills and use-case folders directly for all agent instructions. Product README files provide guidance on usage patterns.
 
 ## Learn More
 
@@ -281,6 +272,7 @@ Step 6: Verify  ←  Step 5: Apply  ←  ─────┘    └→ Stop
 - **[Vault Guide](vault/README.md)** - Vault policies and secret management
 - **[Vault Radar Guide](vault-radar/README.md)** - Secrets detection and remediation
 - **[Consul Guide](consul/README.md)** - Service mesh configuration
+- **[Packer Guide](packer/README.md)** - Image creation and registry publishing
 
 ### Platform Documentation
 - [GitHub Copilot Custom Instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions)

@@ -1,151 +1,86 @@
-# Vault Skills & Workflows
 
-This directory contains AI agent instructions for secure secrets management, policy creation, and zero-trust security patterns using HashiCorp Vault.
+
+# Vault Instructions Library
+
+This directory contains curated instruction sets, skills, and workflows for AI agents working with HashiCorp Vault. The structure is organized by product, then by use case, then by AI assistant/config folders.
 
 ## Directory Structure
 
 ```
 vault/
-├── README.md (this file)
-├── skills/
-│   ├── generate-policy/        # Create least-privilege ACL policies
-│   └── read-secret-securely/   # Secure secret access patterns
-├── workflows/
-│   └── new-kv-engine-setup.md  # Initialize new KV secrets engine
-└── prompts/
-    └── system-prompt-vault.md  # AI system prompt for Vault work
+├── generate-policy/               # Use case: policy generation and management
+│   ├── SKILL.md                   # Policy generation skill documentation
+│   └── resources/                 # Policy examples and templates
+└── README.md                      # This file
 ```
 
 ---
 
-## What's Inside
 
-### Skills
 
-**Skills** are discrete, reusable capabilities that teach AI agents specific Vault tasks.
+## Example Use Case: Application Policy Creation
 
-*** For Claude Desktop (Native SKILL.md Support) ***
+**Scenario:** Create a least-privilege Vault policy for a production web application.
 
-  ```bash
-  # No setup needed! Claude auto-discovers SKILL.md files
-  # Just use natural language:
+**Requirements:**
+- AppRole authentication
+- Read secrets at `secret/data/web-app/*`
+- Write to `database/creds/web-app-role`
+- Explicit deny for other apps' secrets
+- SOC2 compliance
 
-  "Using the generate-policy skill, create a policy for my web application"
-
-  "Using the read-secret-securely skill, show me how to retrieve database credentials"
-  ```
-
-**Why this works**: Claude Desktop natively supports Anthropic's SKILL.md format with progressive disclosure. It automatically finds and loads relevant skills.
-
-#### [generate-policy](skills/generate-policy/)
-**Purpose**: Create least-privilege Vault ACL policies with explicit deny rules
-
-**Use when**:
-- Creating new application access policies
-- Need zero-trust secret access
-- Implementing compliance requirements
-- Setting up CI/CD authentication
-
-**Example**:
+**Prompt:**
 ```
-@workspace Using vault/skills/generate-policy/, create:
-
-Application: web-app-prod
-Authentication: AppRole
-Access needed:
-  - Read secrets at secret/data/web-app/*
-  - Write to database/creds/web-app-role
-  - NO access to other apps' secrets
-Compliance: SOC2, least-privilege
+@workspace Using vault/generate-policy/, create a least-privilege policy for web-app-prod.
 ```
-
-**Key Features**:
-- Principle of least privilege by default
-- Explicit deny rules for sensitive paths
-- Path-based authorization
-- Capability-specific permissions (read, write, delete, list, sudo)
-- Compliance documentation (SOC2, HIPAA, PCI DSS)
 
 ---
 
-#### [read-secret-securely](skills/read-secret-securely/)
-**Purpose**: Retrieve secrets from Vault following security best practices
 
-**Use when**:
-- Applications need runtime secrets
-- CI/CD pipelines require credentials
-- Secure database connection strings
-- API keys, certificates, tokens
+## Core Skills
 
-**Example**:
-```
-@workspace Using vault/skills/read-secret-securely/:
-
-Application: payment-service
-Secret path: secret/data/payments/stripe
-Authentication: Kubernetes service account
-Security:
-  - Never log secret values
-  - In-memory only (no disk write)
-  - Rotate credentials after read
-  - Audit all access
-```
-
-**Key Features**:
-- Multiple authentication methods (AppRole, Kubernetes, JWT, AWS IAM)
-- Secure secret handling (no logging, no disk persistence)
-- Credential rotation
-- Audit trail integration
-- Error handling without exposing secrets
+- `generate-policy/`: Create least-privilege ACL policies with explicit deny rules
 
 ---
 
-### Workflows
+## Additional Resources
 
-**Workflows** are multi-step processes that combine multiple skills and tools.
-
-#### [new-kv-engine-setup](workflows/new-kv-engine-setup.md)
-**Purpose**: Initialize and configure new Key-Value secrets engine
-
-**Phases**:
-1. **Enable Engine**: Mount new KV v2 secrets engine
-2. **Configure Settings**: Versioning, max versions, CAS required
-3. **Create Policies**: Admin, read-only, write policies
-4. **Setup Auth**: Configure authentication methods
-5. **Test Access**: Verify permissions
-6. **Document**: Create usage guide
-
-**Use when**:
-- New application requires secrets storage
-- Isolating secrets by team/environment
-- Setting up multi-tenant Vault
-- Migrating from external secrets manager
-
-**Integration**: Works with HCP Vault, Vault Enterprise, Vault OSS
+- [Policy Examples](generate-policy/resources/policy-examples.hcl)
+- [Vault Documentation](https://www.vaultproject.io/docs)
+- [HCP Vault](https://developer.hashicorp.com/vault/docs/platform/hcp)
+- [Vault Policies](https://developer.hashicorp.com/vault/docs/concepts/policies)
+- [Auth Methods](https://developer.hashicorp.com/vault/docs/auth)
+- [CIS Vault Benchmark](https://www.cisecurity.org/benchmark/hashicorp_vault)
+- [SOC2 Compliance Guide](https://www.vaultproject.io/docs/platform/soc2)
 
 ---
 
-### Prompts
+## Security Principles
 
-**Prompts** are specialized instructions for specific AI agent scenarios.
+All Vault skills follow zero-trust security principles:
 
-#### [system-prompt-vault](prompts/system-prompt-vault.md)
-**Purpose**: Define AI agent behavior for Vault security work
+**Always**:
+- Apply principle of least privilege
+- Use explicit deny rules for sensitive paths
+- Authenticate with short-lived tokens
+- Rotate credentials regularly
+- Audit all secret access
+- Encrypt secrets in transit (TLS)
+- Never log secret values
+- Use namespaces for multi-tenancy (Vault Enterprise)
+- Implement break-glass procedures
+- Document access rationale
 
-**Use when**:
-- Starting new AI agent session for Vault
-- Need security-first context
-- Autonomous secret management
-- Policy generation tasks
-
-**Sets expectations for**:
-- Zero-trust security model
-- Least-privilege access
-- Secret handling best practices
-- Audit requirements
-- Compliance considerations
-
----
+**Never**:
+- Use root token in production
+- Store secrets in environment variables (fetch at runtime)
+- Log secret values to stdout/stderr/files
+- Write secrets to disk (temp files, caches)
+- Grant wildcard permissions (`*`) without explicit deny
+- Allow `sudo` capability without justification
+- Share policies across trust boundaries
+- Hard-code Vault tokens in code
+- Skip authentication verification
 
 ## Quick Start
 
@@ -153,7 +88,7 @@ Security:
 
 **Method 1: Direct reference** (no setup)
 ```
-@workspace Using vault/skills/generate-policy/, create AppRole policy for my app
+@workspace Using vault/generate-policy/, create AppRole policy for my app
 ```
 
 **Method 2: Custom Agent** (specialized)
@@ -165,7 +100,7 @@ description: Zero-trust secrets management expert
 tools: ["read", "edit", "search", "terminal"]
 ---
 
-Load instructions from vault/skills/generate-policy/SKILL.md
+Load instructions from vault/generate-policy/SKILL.md
 Always apply principle of least privilege...
 ```
 
@@ -173,7 +108,7 @@ Always apply principle of least privilege...
 Add to `.github/copilot-instructions.md`:
 ```markdown
 ## Vault Standards
-Reference vault/skills/generate-policy/ for all policy creation.
+Reference vault/generate-policy/ for all policy creation.
 Never log secret values in application code.
 Always use explicit deny rules for sensitive paths.
 ```
@@ -205,7 +140,7 @@ Claude will apply zero-trust patterns automatically.
 ```markdown
 Generate Vault policy following zero-trust principles:
 
-1. Load: #file:../../agent-instructions-library-man/vault/skills/generate-policy/SKILL.md
+1. Load: #file:../../agent-instructions-library/vault/generate-policy/SKILL.md
 2. Apply least privilege
 3. Add explicit deny rules
 4. Document access rationale
@@ -222,22 +157,13 @@ Generate Vault policy following zero-trust principles:
 ## Vault Security Standards
 
 ### Policy Generation
-Use: agent-instructions-library-man/vault/skills/generate-policy/
+Use: agent-instructions-library/vault/generate-policy/
 
 Always:
 - Apply principle of least privilege
 - Use explicit deny for sensitive paths
 - Document all capabilities granted
-- Include compliance notes (SOC2, HIPAA)
-
-### Secret Access
-Use: agent-instructions-library-man/vault/skills/read-secret-securely/
-
-Never:
-- Log secret values to stdout/stderr
-- Write secrets to disk (temp files, logs)
-- Store secrets in environment variables (prefer runtime fetch)
-- Use root token in production
+- Include compliance notes (SOC2, HIPAA, PCI-DSS)
 ```
 
 ---
@@ -251,10 +177,9 @@ Never:
 4. Practice with KV secrets engine
 
 ### Intermediate
-1. Use **read-secret-securely** in applications
-2. Practice **new-kv-engine-setup** workflow
-3. Learn dynamic secrets (databases, cloud providers)
-4. Study policy templating
+1. Learn dynamic secrets (databases, cloud providers)
+2. Study policy templating
+3. Implement multi-environment policies
 
 ### Advanced
 1. Implement multi-tenant Vault architectures
@@ -268,7 +193,7 @@ Never:
 
 ### Use Case 1: Create Application Policy
 ```
-@workspace Using vault/skills/generate-policy/, create:
+@workspace Using vault/generate-policy/, create:
 
 Application: web-api-prod
 Authentication: AppRole
@@ -323,9 +248,9 @@ path "sys/mounts/*" {
 
 ---
 
-### Use Case 2: Secure Secret Reading in App
+### Use Case 2: Best Practices for Vault Integration
 ```
-@workspace Using vault/skills/read-secret-securely/:
+@workspace Using Vault best practices:
 
 Language: Python
 Application: payment-processor
@@ -429,7 +354,7 @@ stripe_api_key = stripe_credentials['api_key']
 
 ### Use Case 3: Setup New KV Engine for Team
 ```
-@workspace Apply vault/workflows/new-kv-engine-setup.md:
+@workspace Setup a new KV engine for my team:
 
 Team: data-science
 Engine path: ds-secrets
@@ -448,7 +373,7 @@ Authentication: JWT from CI/CD
 
 ### Use Case 4: Multi-Environment Secrets Strategy
 ```
-@workspace Using vault/skills/generate-policy/:
+@workspace Using vault/generate-policy/:
 
 Setup policies for 3 environments:
   - dev: relaxed (developers can read/write)
@@ -638,7 +563,7 @@ resource "vault_approle_auth_backend_role" "web_app" {
 ## Additional Resources
 
 ### Within This Repository
-- [Policy Examples](skills/generate-policy/resources/policy-examples.hcl)
+- [Policy Examples](generate-policy/resources/policy-examples.hcl)
 - [Main README](../README.md) - Platform integration guides
 
 ### Official Documentation
