@@ -9,6 +9,5 @@
   "homepage": "https://developer.hashicorp.com/terraform/language/style",
   "repository": "https://github.com/hashicorp/terraform-mcp-server",
   "license": "MPL-2.0",
-  "keywords": ["terraform", "infrastructure", "automation", "hashicorp", "iac", "cloud"],
-  "mcpServers": "./.mcp.json"
+  "keywords": ["terraform", "infrastructure", "automation", "hashicorp", "iac", "cloud"]
 }
