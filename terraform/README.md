@@ -67,7 +67,7 @@ npx add-skill hashicorp/agent-skills/terraform/provider-development/skills/provi
 
 ## MCP Server
 
-All Terraform plugins include the `terraform-mcp-server` which provides access to Terraform Cloud/Enterprise APIs. Set the following environment variables:
+Relevant Terraform plugins include the `terraform-mcp-server` which provides access to Terraform Cloud/Enterprise APIs. Set the following environment variables:
 
 ```bash
 export TFE_TOKEN="your-terraform-cloud-token"
